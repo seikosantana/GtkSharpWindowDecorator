@@ -1,0 +1,24 @@
+using Gtk;
+using UI = Gtk.Builder.ObjectAttribute;
+
+{{#if withNamespace}}
+namespace {{withNamespace}} {
+{{/if}}
+
+public partial class {{windowName}}: Window
+{
+
+    private {{windowName}}(Builder builder) : base(builder.GetRawOwnedObject("{{windowName}}"))
+    {
+        builder.Autoconnect(this);
+    }
+
+    {{#each widgets}}
+        [UI] public {{this.className}} {{this.widgetId}}
+    {{/each}}
+
+}
+
+{{#if withNamespace}}
+}
+{{/if}}
