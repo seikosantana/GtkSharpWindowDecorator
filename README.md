@@ -14,18 +14,21 @@ Usage:
 Options:
   --file <file>                      The .glade XML input file to generate from
   --window <window>                  The window id in the glade resource
-  --with-namespace <with-namespace>  Namespace for generated class (optional)
+  --with-namespace <with-namespace>  Namespace for generated class
   --output-folder <output-folder>    Output location for generated files (optional, defaults to current directory)
+  --ui-only                          Generates the UI definitions only (optional, defaults to true) [default: True]
   --version                          Show version information
   -?, -h, --help                     Show help and usage information
 ```
 
 ### Example
 ```
-gtksd --file abs-auto.glade --window MainWindow --with-namespace ABS --output-folder UI
+gtksd --file abs-auto.glade --window MainWindow --with-namespace ABS --output-folder UI --ui-only false
 ```
 
-### Sample Output
+The above command will parse `abs-auto.glade`, finding a `GtkWindow` with widget id `MainWindow`. The output class will be `partial class MainWindow` in namespace `ABS`. the `--ui-only false` tells `gtks` to generate not only the UI definitions, but also the class separated, outputs both `MainWindow.UI.cs` and `MainWindow.cs` in the `UI` folder.
+
+### Sample UI Definition Output
 ```csharp
 using Gtk;
 using UI = Gtk.Builder.ObjectAttribute;
@@ -61,6 +64,24 @@ public partial class MainWindow: Window
         [UI] public Button btnReconnect
         [UI] public Button btnReset
         [UI] public Button btnConfigure
+
+}
+
+}
+```
+
+## Sample Window class Output
+```cs
+using Gtk;
+
+namespace ABS {
+
+public partial class MainWindow: Window
+{
+
+    public MainWindow() : this(new Builder("abs-auto.glade"))
+    {
+    }
 
 }
 
