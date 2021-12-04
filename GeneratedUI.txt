@@ -14,7 +14,7 @@ public partial class {{windowName}}: Window
     }
 
     {{#each widgets}}
-        [UI] public {{this.className}} {{this.widgetId}}
+        [UI] public {{this.className}} {{this.widgetId}};
     {{/each}}
 
 }
