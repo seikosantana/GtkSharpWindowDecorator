@@ -13,7 +13,8 @@ class Program
     /// <param name="window">The window id in the glade resource</param>
     /// <param name="withNamespace">Namespace for generated class</param>
     /// <param name="outputFolder">Output location for generated files (optional, defaults to current directory)</param>
-    public static void Main(string file, string window, string withNamespace, string outputFolder)
+    /// <param name="uiOnly">Generates the UI definitions only (optional, defaults to true)</param>
+    public static void Main(string file, string window, string withNamespace, string outputFolder, bool uiOnly = true)
     {
         //Ensure input file and window name are specified.
         if (string.IsNullOrEmpty(file) || (string.IsNullOrEmpty(window)))
@@ -34,6 +35,7 @@ class Program
         }
 
         string templateUIClass = GetEmbeddedResource("GeneratedUI.txt");
+        string templateClass = GetEmbeddedResource("Generated.txt");
 
         //find all object nodes.
         var objectNodes = document.GetElementsByTagName("object");
@@ -58,11 +60,12 @@ class Program
                 }
 
                 var uiTemplate = Handlebars.Compile(templateUIClass);
-                var data = new
+                var uiData = new
                 {
                     windowName = window,
                     hasNamespace = withNamespace is not null,
                     withNamespace = withNamespace,
+                    filename = file,
                     widgets = members.Keys.Select(id => new
                     {
                         className = members[id],
@@ -70,13 +73,25 @@ class Program
                     })
                 };
 
-                var result = uiTemplate(data);
-                string outputPath = string.IsNullOrEmpty(outputFolder) ? Path.Join(Environment.CurrentDirectory, $"{window}.UI.cs") : Path.Join(outputFolder, $"{window}.UI.cs");
+                var resultUIClass = uiTemplate(uiData);
+                string resultClass = "";
+                if (!uiOnly) {
+                    var classTemplate = Handlebars.Compile(templateClass);
+                    resultClass = classTemplate(uiData);
+                }
+
+                string outputUIPath = string.IsNullOrEmpty(outputFolder) ? Path.Join(Environment.CurrentDirectory, $"{window}.UI.cs") : Path.Join(outputFolder, $"{window}.UI.cs");
+                string outputClassPath = string.IsNullOrEmpty(outputFolder) ? Path.Join(Environment.CurrentDirectory, $"{window}.cs") : Path.Join(outputFolder, $"{window}.cs");
 
                 try
                 {
-                    File.WriteAllText(outputPath, result);
-                    Console.WriteLine($"Wrote output to {outputPath}");
+                    File.WriteAllText(outputUIPath, resultUIClass);
+                    Console.WriteLine($"Wrote output to {outputUIPath}");
+
+                    if (!uiOnly) {
+                        File.WriteAllText(outputClassPath, resultClass);
+                        Console.WriteLine($"Wrote output to {outputClassPath}");
+                    }
                 }
                 catch (Exception ex) {
                     Console.WriteLine("Unable to save output.", ex.Message);
