@@ -14,8 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="**\*.txt" />
-    <EmbeddedResource Include="**\*.txt">
+    <EmbeddedResource Include="GeneratedUI.txt">
       <LogicalName>%(Filename)%(Extension)</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
