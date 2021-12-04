@@ -5,7 +5,8 @@ A C# class generator for `glade` files.
 The binary is framework independant written in .NET 6. The file `gtksd`, `gtksd.exe` is the renamed output file for shorter name on invocation. You can get `gtksd` from the releases page.
 
 ## How to use
-`gtksd` shouldn't be too hard to use unless you are unfamiliar with command line interface. You can always refer to built in help by invoking `gtksd -h`.
+`gtksd` is for use with https://github.com/GtkSharp/GtkSharp.  
+`gtksd` shouldn't be too hard to use unless you are unfamiliar with command line interface. You can always refer to built-in help by invoking `gtksd -h`.
 
 ```
 Usage:
