@@ -15,13 +15,29 @@ class Program
     /// <param name="outputFolder">Output location for generated files</param>
     public static void Main(string file, string window, string withNamespace, string outputFolder)
     {
-        XmlDocument document = new XmlDocument();
-        document.Load(file);
-        string templateUIClass = GetEmbeddedResource("GeneratedUI.txt");
-        string templateMember = GetEmbeddedResource("GeneratedUI.txt");
+        //Ensure input file and window name are specified.
+        if (string.IsNullOrEmpty(file) || (string.IsNullOrEmpty(window)))
+        {
+            Console.WriteLine("The --file and --window must be specified. Use -h for help");
+            Environment.Exit(0);
+        }
 
+        XmlDocument document = new XmlDocument();
+        try
+        {
+            document.Load(file);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Unable to load file {file}");
+            Environment.Exit(1);
+        }
+
+        string templateUIClass = GetEmbeddedResource("GeneratedUI.txt");
+
+        //find all object nodes.
         var objectNodes = document.GetElementsByTagName("object");
-        for (int i = 0; i < objectNodes.Count; i++)
+        for (int i = 0; i < objectNodes.Count; i++) //find window with specified window name
         {
             var node = objectNodes[i];
             if (node.Attributes != null &&
@@ -42,7 +58,6 @@ class Program
                 }
 
                 var uiTemplate = Handlebars.Compile(templateUIClass);
-                var memberTemplate = Handlebars.Compile(templateMember);
                 var data = new
                 {
                     windowName = window,
@@ -57,10 +72,22 @@ class Program
 
                 var result = uiTemplate(data);
                 string outputPath = string.IsNullOrEmpty(outputFolder) ? Path.Join(Environment.CurrentDirectory, $"{window}.UI.cs") : Path.Join(outputFolder, $"{window}.UI.cs");
-                File.WriteAllText(outputPath, result);
-                Console.WriteLine($"Wrote output to {outputPath}");
+
+                try
+                {
+                    File.WriteAllText(outputPath, result);
+                    Console.WriteLine($"Wrote output to {outputPath}");
+                }
+                catch (Exception ex) {
+                    Console.WriteLine("Unable to save output.", ex.Message);
+                }
+                Environment.Exit(0);
             }
         }
+
+        //Won't reach this part unless no nodes are found.
+        Console.WriteLine($"No GtkWindow node with id {window}");
+        Environment.Exit(1);
     }
 
     public static string GetEmbeddedResource(string filename)
