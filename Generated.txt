@@ -1,0 +1,18 @@
+using Gtk;
+
+{{#if withNamespace}}
+namespace {{withNamespace}} {
+{{/if}}
+
+public partial class {{windowName}}: Window
+{
+
+    public {{windowName}}() : this(new Builder("{{fileName}}"))
+    {
+    }
+
+}
+
+{{#if withNamespace}}
+}
+{{/if}}
