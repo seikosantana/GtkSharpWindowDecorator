@@ -12,7 +12,7 @@ class Program
     /// <param name="file">The .glade XML input file to generate from</param>
     /// <param name="window">The window id in the glade resource</param>
     /// <param name="withNamespace">Namespace for generated class</param>
-    /// <param name="outputFolder">Output location for generated files</param>
+    /// <param name="outputFolder">Output location for generated files (optional, defaults to current directory)</param>
     public static void Main(string file, string window, string withNamespace, string outputFolder)
     {
         //Ensure input file and window name are specified.
